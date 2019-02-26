@@ -59,10 +59,10 @@ public class FloatingViewService extends Service {
         final WindowManager.LayoutParams params = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
-                LAYOUT_FLAG, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                LAYOUT_FLAG, 0,//WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                 PixelFormat.TRANSLUCENT);
 
-        params.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS;
+        params.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;// | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS;
 
         //Specify the view position
         params.gravity = Gravity.TOP | Gravity.START;        //Initially view will be added to top-left corner
@@ -95,7 +95,7 @@ public class FloatingViewService extends Service {
         etSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                params.flags = WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS;
+                params.flags = 0;//WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS;
                 mWindowManager.updateViewLayout(floatingView, params);
             }
         });
@@ -103,9 +103,9 @@ public class FloatingViewService extends Service {
         floatingView.setOnTouchListener((v, event) -> {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
                 if(etSearch.hasFocus()) {
-                    params.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS;
+                    params.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE ;//| WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS;
                 } else {
-                    params.flags = WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS;
+                    params.flags = 0;//WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS;
                 }
                 mWindowManager.updateViewLayout(floatingView, params);
             }
@@ -118,7 +118,7 @@ public class FloatingViewService extends Service {
                 EditText etSearch = floatingView.findViewById(R.id.etSearch);
                 String query = etSearch.getText().toString();
                 etSearch.clearFocus();
-                params.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS;
+                params.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;//| WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS;
                 mWindowManager.updateViewLayout(floatingView, params);
 
                 new Thread(() -> {

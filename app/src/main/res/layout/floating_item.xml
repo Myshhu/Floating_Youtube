@@ -13,7 +13,7 @@
 
         <EditText
             android:id="@+id/etSearch"
-            android:background="#3D3C3C"
+            android:background="@drawable/etsearchshape"
 
             android:focusable="true"
             android:focusableInTouchMode="true"
@@ -29,7 +29,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:adjustViewBounds="false"
-            android:background="#8A8A8A"
+            android:background="@drawable/btnsearchshape"
             android:onClick="btnSearchClick"
             android:src="@android:drawable/ic_menu_search" />
     </LinearLayout>
@@ -56,12 +56,12 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="10"
-            android:background="#3D3C3C"
+            android:background="@drawable/btnmoveshape"
             android:text="Move" />
 
         <Button
             android:id="@+id/btnResize"
-            android:background="#8A8A8A"
+            android:background="@drawable/btnresizeshape"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="5"
