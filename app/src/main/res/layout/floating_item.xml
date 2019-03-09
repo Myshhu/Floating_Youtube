@@ -30,7 +30,6 @@
             android:layout_weight="1"
             android:adjustViewBounds="false"
             android:background="@drawable/btnsearchshape"
-            android:onClick="btnSearchClick"
             android:src="@android:drawable/ic_menu_search" />
     </LinearLayout>
 
@@ -59,17 +58,20 @@
             android:background="@drawable/btnmoveshape"
             android:text="Move" />
 
-        <Button
+        <ImageButton
             android:id="@+id/btnResize"
-            android:background="@drawable/btnresizeshape"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="5"
-            android:minHeight="30dp"
-            android:minWidth="30dp"
+            android:adjustViewBounds="true"
+            android:background="@drawable/btnresizeshape"
             android:maxWidth="50dp"
             android:maxHeight="50dp"
-            android:text="R"/>
+            android:minWidth="30dp"
+            android:minHeight="30dp"
+            android:scaleType="fitCenter"
+            android:src="@android:drawable/ic_menu_crop"
+            android:text="R" />
     </LinearLayout>
 
 

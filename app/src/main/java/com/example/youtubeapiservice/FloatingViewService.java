@@ -32,7 +32,7 @@ public class FloatingViewService extends Service {
     private View floatingView;
     private EditText etSearch;
     private YouTubePlayerView playerView;
-    private String API_KEY = "KEY";
+    private String API_KEY = com.example.youtubeapiservice.API_KEY.KEY;
     private String VIDEO_CODE = "GdNwaa1m1Yo";
     private YouTubePlayer youTubePlayer;
 
@@ -214,7 +214,7 @@ public class FloatingViewService extends Service {
                 }
 
                 deltaTime = (System.currentTimeMillis() - startTime);
-                if (deltaTime > 500 && !moved) {
+                if (deltaTime > 1000 && !moved) {
                     stopSelf();
                 }
                 return false;
@@ -250,10 +250,10 @@ public class FloatingViewService extends Service {
                         //The check for Xdiff <10 && YDiff< 10 because sometime elements moves a little while clicking.
                         if (XDiff < 10 && YDiff < 10) {
 
-                            Intent startMain = new Intent(Intent.ACTION_MAIN);
+                            /*Intent startMain = new Intent(Intent.ACTION_MAIN);
                             startMain.addCategory(Intent.CATEGORY_HOME);
                             startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            startActivity(startMain);
+                            startActivity(startMain);*/
 
                         }
                         //return false;
