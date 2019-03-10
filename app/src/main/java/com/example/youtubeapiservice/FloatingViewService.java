@@ -16,6 +16,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.android.youtube.player.YouTubePlayerView;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer;
@@ -40,7 +41,14 @@ public class FloatingViewService extends Service {
     private View floatingView;
     private EditText etSearch;
     private YouTubePlayerView playerView;
-    private String API_KEY = com.example.youtubeapiservice.API_KEY.KEY;
+    private String[] API_KEYS_ARRAY = {com.example.youtubeapiservice.API_KEY.KEY,
+            com.example.youtubeapiservice.API_KEY.KEY1,
+            com.example.youtubeapiservice.API_KEY.KEY2,
+            com.example.youtubeapiservice.API_KEY.KEY3,
+            com.example.youtubeapiservice.API_KEY.KEY4};
+    private int currentAPI_KEY = 0;
+    private String API_KEY = API_KEYS_ARRAY[0];
+
     private String VIDEO_CODE = "GdNwaa1m1Yo";
     private YouTubePlayer youTubePlayer;
 
@@ -100,7 +108,8 @@ public class FloatingViewService extends Service {
         params.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;// | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS;
 
         //Specify the view position
-        params.gravity = Gravity.TOP | Gravity.START;        //Initially view will be added to top-left corner
+        //Initially view will be added to top-left corner
+        params.gravity = Gravity.TOP | Gravity.START;
         params.x = 0;
         params.y = 100;
 
@@ -118,21 +127,10 @@ public class FloatingViewService extends Service {
         });
 
         etSearch = floatingView.findViewById(R.id.etSearch);
-        /*etSearch.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                System.out.println("focus changed");
-                params.flags = WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS;
-                mWindowManager.updateViewLayout(floatingView, params);
-            }
-        });*/
 
-        etSearch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                params.flags = 0;//WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS;
-                mWindowManager.updateViewLayout(floatingView, params);
-            }
+        etSearch.setOnClickListener(v -> {
+            params.flags = 0;//WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS;
+            mWindowManager.updateViewLayout(floatingView, params);
         });
 
         floatingView.setOnTouchListener((v, event) -> {
@@ -147,16 +145,15 @@ public class FloatingViewService extends Service {
             return false;
         });
 
-        floatingView.findViewById(R.id.btnSearch).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                EditText etSearch = floatingView.findViewById(R.id.etSearch);
-                String query = etSearch.getText().toString();
-                etSearch.clearFocus();
-                params.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;//| WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS;
-                mWindowManager.updateViewLayout(floatingView, params);
+        floatingView.findViewById(R.id.btnSearch).setOnClickListener(v -> {
+            EditText etSearch = floatingView.findViewById(R.id.etSearch);
+            String query = etSearch.getText().toString();
+            etSearch.clearFocus();
+            params.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;//| WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS;
+            mWindowManager.updateViewLayout(floatingView, params);
 
-                new Thread(() -> {
+            new Thread(() -> {
+                while(true) {
                     try {
                         HttpURLConnection connection;
                         URL url = new URL("https://www.googleapis.com/youtube/v3/search?part=snippet&q=" +
@@ -180,12 +177,18 @@ public class FloatingViewService extends Service {
                                     getJSONObject(0).getJSONObject("id").
                                     getString("videoId");
                             youTubePlayer.loadVideo(key, 0);
+                            break;
+                        } else if (connection.getResponseCode() == 403) {
+                           // if (currentAPI_KEY == 4) {
+                                Toast.makeText(this, "API limits exceeded", Toast.LENGTH_SHORT).show();
+                           // }
+                            //API_KEY = API_KEYS_ARRAY[++currentAPI_KEY];
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                }).start();
-            }
+                }
+            }).start();
         });
 
         //Move view around screen
