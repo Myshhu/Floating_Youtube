@@ -9,7 +9,10 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -42,10 +45,7 @@ public class FloatingViewService extends Service {
     private EditText etSearch;
     private YouTubePlayerView playerView;
     private String[] API_KEYS_ARRAY = {com.example.youtubeapiservice.API_KEY.KEY,
-            com.example.youtubeapiservice.API_KEY.KEY1,
-            com.example.youtubeapiservice.API_KEY.KEY2,
-            com.example.youtubeapiservice.API_KEY.KEY3,
-            com.example.youtubeapiservice.API_KEY.KEY4};
+            com.example.youtubeapiservice.API_KEY.KEY1};
     private int currentAPI_KEY = 0;
     private String API_KEY = API_KEYS_ARRAY[0];
 
@@ -82,6 +82,7 @@ public class FloatingViewService extends Service {
     public void onCreate() {
         super.onCreate();
 
+        //Different notification method for older versions
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startMyOwnForeground();
         } else {
@@ -98,15 +99,14 @@ public class FloatingViewService extends Service {
         } else {
             LAYOUT_FLAG = WindowManager.LayoutParams.TYPE_PHONE;
         }
-        //Add the view to the window.
+
+        //Create view params
         final WindowManager.LayoutParams params = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 LAYOUT_FLAG, 0,//WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                 PixelFormat.TRANSLUCENT);
-
         params.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;// | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS;
-
         //Specify the view position
         //Initially view will be added to top-left corner
         params.gravity = Gravity.TOP | Gravity.START;
@@ -127,7 +127,6 @@ public class FloatingViewService extends Service {
         });
 
         etSearch = floatingView.findViewById(R.id.etSearch);
-
         etSearch.setOnClickListener(v -> {
             params.flags = 0;//WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS;
             mWindowManager.updateViewLayout(floatingView, params);
@@ -145,6 +144,7 @@ public class FloatingViewService extends Service {
             return false;
         });
 
+        //Perform searching
         floatingView.findViewById(R.id.btnSearch).setOnClickListener(v -> {
             EditText etSearch = floatingView.findViewById(R.id.etSearch);
             String query = etSearch.getText().toString();
@@ -153,7 +153,7 @@ public class FloatingViewService extends Service {
             mWindowManager.updateViewLayout(floatingView, params);
 
             new Thread(() -> {
-                while(true) {
+                while (true) {
                     try {
                         HttpURLConnection connection;
                         URL url = new URL("https://www.googleapis.com/youtube/v3/search?part=snippet&q=" +
@@ -179,10 +179,18 @@ public class FloatingViewService extends Service {
                             youTubePlayer.loadVideo(key, 0);
                             break;
                         } else if (connection.getResponseCode() == 403) {
-                           // if (currentAPI_KEY == 4) {
-                                Toast.makeText(this, "API limits exceeded", Toast.LENGTH_SHORT).show();
-                           // }
-                            //API_KEY = API_KEYS_ARRAY[++currentAPI_KEY];
+                            if (currentAPI_KEY == API_KEYS_ARRAY.length - 1) {
+                                //Show toast when all keys are unavailable
+                                Handler handler = new Handler(Looper.getMainLooper());
+                                handler.post(() -> Toast.makeText(getApplicationContext(), "API limits exceeded, try again later", Toast.LENGTH_LONG).show());
+                                currentAPI_KEY = 0;
+                                API_KEY = API_KEYS_ARRAY[currentAPI_KEY];
+                                break;
+                            } else {
+                                //Change API_KEY
+                                API_KEY = API_KEYS_ARRAY[++currentAPI_KEY];
+                                Log.d("AppInfo", "Changed key to " + currentAPI_KEY);
+                            }
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -259,6 +267,7 @@ public class FloatingViewService extends Service {
             }
         });
 
+        //Resizing widget
         floatingView.findViewById(R.id.btnResize).setOnTouchListener(new View.OnTouchListener() {
             private int initialX;
             private int initialY;
@@ -308,14 +317,6 @@ public class FloatingViewService extends Service {
                 return false;
             }
         });
-
-        /*btnClose.setOnLongClickListener(
-                v -> {
-                    stopSelf();
-                    return false;
-                }
-        );*/
-
     }
 
     @Override
