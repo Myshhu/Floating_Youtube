@@ -23,8 +23,8 @@
             android:hint="Search music.."
             android:layout_weight="2"/>
 
-        <ImageView
-            android:id="@+id/btnSearch"
+        <ImageButton
+            android:id="@+id/imgBtnSearch"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -51,7 +51,7 @@
         android:layout_height="wrap_content">
 
         <Button
-            android:id="@+id/btnLaunch"
+            android:id="@+id/btnMove"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="10"
@@ -59,7 +59,7 @@
             android:text="Move" />
 
         <ImageButton
-            android:id="@+id/btnResize"
+            android:id="@+id/imgBtnResize"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="5"
